@@ -36,9 +36,7 @@ export async function decompressFromBase64(b64: string): Promise<string> {
   const bin = atob(pad);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  const stream = new Blob([bytes])
-    .stream()
-    .pipeThrough(new DecompressionStream('deflate-raw'));
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
   return new Response(stream).text();
 }
 

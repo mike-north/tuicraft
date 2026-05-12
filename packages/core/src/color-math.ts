@@ -22,7 +22,9 @@ export function hexToRgb(hex: string): Rgb {
 
 export function rgbToHex(r: number, g: number, b: number): string {
   const c = (n: number): string =>
-    Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+    Math.max(0, Math.min(255, Math.round(n)))
+      .toString(16)
+      .padStart(2, '0');
   return '#' + c(r) + c(g) + c(b);
 }
 
@@ -72,11 +74,7 @@ export function hslToRgb(h: number, s: number, l: number): Rgb {
   };
   const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
   const p = 2 * l - q;
-  return [
-    hue2rgb(p, q, h + 1 / 3) * 255,
-    hue2rgb(p, q, h) * 255,
-    hue2rgb(p, q, h - 1 / 3) * 255,
-  ];
+  return [hue2rgb(p, q, h + 1 / 3) * 255, hue2rgb(p, q, h) * 255, hue2rgb(p, q, h - 1 / 3) * 255];
 }
 
 export function clamp(v: number, lo: number, hi: number): number {

@@ -8,13 +8,7 @@
 
 import * as monaco from 'monaco-editor';
 import { Terminal } from '@xterm/xterm';
-import {
-  h,
-  Fragment,
-  renderTreeToAnsi,
-  resolveFontFamily,
-  type JSXNode,
-} from '@tuicraft/core';
+import { h, Fragment, renderTreeToAnsi, resolveFontFamily, type JSXNode } from '@tuicraft/core';
 type HFn = typeof h;
 type FragFn = typeof Fragment;
 import { withTimeout, formatDiagnostic } from './monaco-loader.js';
@@ -54,11 +48,7 @@ function safeJson(v: unknown): string {
 function isComponentSpec(v: unknown): v is ComponentSpec {
   if (typeof v !== 'object' || v === null) return false;
   const o = v as { name?: unknown; render?: unknown; states?: unknown };
-  return (
-    typeof o.name === 'string' &&
-    typeof o.render === 'function' &&
-    Array.isArray(o.states)
-  );
+  return typeof o.name === 'string' && typeof o.render === 'function' && Array.isArray(o.states);
 }
 
 export class ComponentInstance {
@@ -106,7 +96,9 @@ export class ComponentInstance {
     const focusBtn = el('button', 'card-tool');
     focusBtn.title = 'focus this component (stage mode)';
     focusBtn.innerHTML = '<span class="focus-glyph"></span>';
-    focusBtn.addEventListener('click', () => { this.app.enterStageMode(this); });
+    focusBtn.addEventListener('click', () => {
+      this.app.enterStageMode(this);
+    });
 
     const delBtn = el('button', 'card-tool danger');
     delBtn.title = 'remove component';
@@ -126,7 +118,8 @@ export class ComponentInstance {
 
     const statesPane = el('div', 'states-pane');
     const statesH = el('div', 'states-h');
-    statesH.innerHTML = '<span class="num">▸</span><span class="label">states</span><span class="rule"></span>';
+    statesH.innerHTML =
+      '<span class="num">▸</span><span class="label">states</span><span class="rule"></span>';
     const statesList = el('div', 'states-list');
     statesPane.append(statesH, statesList);
 
@@ -223,8 +216,12 @@ export class ComponentInstance {
       if (!f) {
         try {
           const [syn, sem] = await Promise.all([
-            client.getSyntacticDiagnostics(uriStr).catch(() => [] as monaco.languages.typescript.Diagnostic[]),
-            client.getSemanticDiagnostics(uriStr).catch(() => [] as monaco.languages.typescript.Diagnostic[]),
+            client
+              .getSyntacticDiagnostics(uriStr)
+              .catch(() => [] as monaco.languages.typescript.Diagnostic[]),
+            client
+              .getSemanticDiagnostics(uriStr)
+              .catch(() => [] as monaco.languages.typescript.Diagnostic[]),
           ]);
           const first = syn[0] ?? sem[0];
           const msg = first ? formatDiagnostic(first) : 'no emit output';
@@ -259,8 +256,12 @@ export class ComponentInstance {
       // we explicitly inject.
       // eslint-disable-next-line @typescript-eslint/no-implied-eval
       const fn = new Function(
-        'exports', 'module', 'require',
-        'h', 'Fragment', 'defineComponent',
+        'exports',
+        'module',
+        'require',
+        'h',
+        'Fragment',
+        'defineComponent',
         jsCode,
       ) as (
         exports: object,
@@ -306,7 +307,9 @@ export class ComponentInstance {
   private reconcileStates(states: ComponentState[]): void {
     // Strip any stale error placeholder left by a prior failed compile —
     // otherwise it lingers above the freshly-rendered state cards.
-    this.statesListEl.querySelectorAll('.state-error').forEach((e) => { e.remove(); });
+    this.statesListEl.querySelectorAll('.state-error').forEach((e) => {
+      e.remove();
+    });
 
     while (this.stateCards.length > states.length) {
       const sc = this.stateCards.pop();
@@ -324,7 +327,7 @@ export class ComponentInstance {
       const sc = this.stateCards[i];
       if (!sc) return;
       sc.state = s;
-      sc.nameEl.textContent = s.name || ('state ' + String(i + 1));
+      sc.nameEl.textContent = s.name || 'state ' + String(i + 1);
       sc.badgeEl.textContent = String(i + 1).padStart(2, '0');
       if (sc.dataVisible) sc.dataEl.textContent = safeJson(s.data);
     });
@@ -377,7 +380,15 @@ export class ComponentInstance {
     termEl.style.setProperty('--state-term-bg', theme.background);
     term.write('\x1b[?25l');
 
-    const sc: StateCard = { el: root, term, nameEl, badgeEl: badge, dataEl, dataVisible: false, state: null };
+    const sc: StateCard = {
+      el: root,
+      term,
+      nameEl,
+      badgeEl: badge,
+      dataEl,
+      dataVisible: false,
+      state: null,
+    };
     dataToggle.addEventListener('click', () => {
       sc.dataVisible = !sc.dataVisible;
       dataToggle.classList.toggle('on', sc.dataVisible);

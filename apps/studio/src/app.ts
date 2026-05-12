@@ -67,7 +67,9 @@ class AppImpl {
     e.textContent = msg;
     e.classList.add('show');
     if (this.toastTimer != null) clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => { e.classList.remove('show'); }, ms);
+    this.toastTimer = setTimeout(() => {
+      e.classList.remove('show');
+    }, ms);
   }
 
   // ----- derived palette index -----
@@ -146,7 +148,16 @@ class AppImpl {
         name.style.color = t.foreground; // readable on the theme's own bg
 
         const swatch = el('div', 'theme-swatch');
-        const swatchKeys: AnsiName[] = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'brightBlack', 'brightWhite'];
+        const swatchKeys: AnsiName[] = [
+          'red',
+          'green',
+          'yellow',
+          'blue',
+          'magenta',
+          'cyan',
+          'brightBlack',
+          'brightWhite',
+        ];
         for (const c of swatchKeys) {
           const s = document.createElement('div');
           s.style.background = t.ansi[c];
@@ -154,7 +165,9 @@ class AppImpl {
         }
 
         row.append(name, swatch);
-        row.addEventListener('click', () => { this.setTheme(id); });
+        row.addEventListener('click', () => {
+          this.setTheme(id);
+        });
         grid.appendChild(row);
       }
       host.appendChild(grid);
@@ -182,9 +195,17 @@ class AppImpl {
       const row = el('div', 'font-item' + (id === this.state.fontId ? ' active' : ''));
       row.dataset['fontId'] = id;
       row.innerHTML =
-        '<span class="font-name">' + f.name + '</span>' +
-        '<span class="font-sample" style="font-family:' + f.family + '">' + f.sample + '</span>';
-      row.addEventListener('click', () => { this.setFont(id); });
+        '<span class="font-name">' +
+        f.name +
+        '</span>' +
+        '<span class="font-sample" style="font-family:' +
+        f.family +
+        '">' +
+        f.sample +
+        '</span>';
+      row.addEventListener('click', () => {
+        this.setFont(id);
+      });
       host.appendChild(row);
     }
   }
@@ -405,7 +426,10 @@ class AppImpl {
     const t = this.currentTheme();
     const f = (FONTS as Record<string, Font>)[this.state.fontId];
     setText('stage-theme', t.name);
-    setText('stage-font', (f ? f.name : this.state.fontId) + (this.state.nerdIcons ? ' + Nerd Font' : ''));
+    setText(
+      'stage-font',
+      (f ? f.name : this.state.fontId) + (this.state.nerdIcons ? ' + Nerd Font' : ''),
+    );
     setText('stage-size', px(this.state.fontSize));
   }
 
@@ -502,7 +526,8 @@ class AppImpl {
     if (!this.stageActive) return;
     const cur = this.components[this.stageIndex];
     if (!cur || cur.stateCards.length === 0) return;
-    this.stageStateIndex = (this.stageStateIndex - 1 + cur.stateCards.length) % cur.stateCards.length;
+    this.stageStateIndex =
+      (this.stageStateIndex - 1 + cur.stateCards.length) % cur.stateCards.length;
     this.applyStageVisibility();
     this.refreshCurrent();
   }
@@ -562,7 +587,9 @@ class AppImpl {
     sbToggle.addEventListener('click', () => {
       const collapsed = document.body.classList.toggle('sidebar-collapsed');
       localStorage.setItem('tuicraft-sb', collapsed ? '1' : '0');
-      setTimeout(() => { this.applyTerminalOptionsToAll(); }, 220);
+      setTimeout(() => {
+        this.applyTerminalOptionsToAll();
+      }, 220);
     });
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b' && !e.shiftKey) {
@@ -571,7 +598,9 @@ class AppImpl {
       }
     });
 
-    $('add-derived-btn').addEventListener('click', () => { this.addDerived(); });
+    $('add-derived-btn').addEventListener('click', () => {
+      this.addDerived();
+    });
     $as('nerd-toggle', HTMLInputElement).addEventListener('change', (e) => {
       const t = e.target;
       if (t instanceof HTMLInputElement) this.setNerdIcons(t.checked);
@@ -597,14 +626,30 @@ class AppImpl {
       })();
     });
 
-    $('stage-btn').addEventListener('click', () => { this.enterStageMode(); });
-    $('stage-exit-btn').addEventListener('click', () => { this.exitStageMode(); });
-    $('stage-prev-btn').addEventListener('click', () => { this.stagePrev(); });
-    $('stage-next-btn').addEventListener('click', () => { this.stageNext(); });
-    $('stage-state-prev-btn').addEventListener('click', () => { this.stageStatePrev(); });
-    $('stage-state-next-btn').addEventListener('click', () => { this.stageStateNext(); });
-    $('stage-fs-up').addEventListener('click', () => { this.bumpStageFontSize(2); });
-    $('stage-fs-down').addEventListener('click', () => { this.bumpStageFontSize(-2); });
+    $('stage-btn').addEventListener('click', () => {
+      this.enterStageMode();
+    });
+    $('stage-exit-btn').addEventListener('click', () => {
+      this.exitStageMode();
+    });
+    $('stage-prev-btn').addEventListener('click', () => {
+      this.stagePrev();
+    });
+    $('stage-next-btn').addEventListener('click', () => {
+      this.stageNext();
+    });
+    $('stage-state-prev-btn').addEventListener('click', () => {
+      this.stageStatePrev();
+    });
+    $('stage-state-next-btn').addEventListener('click', () => {
+      this.stageStateNext();
+    });
+    $('stage-fs-up').addEventListener('click', () => {
+      this.bumpStageFontSize(2);
+    });
+    $('stage-fs-down').addEventListener('click', () => {
+      this.bumpStageFontSize(-2);
+    });
 
     $('reset-btn').addEventListener('click', () => {
       if (!confirm('Reset workspace? Everything will be lost.')) return;
@@ -612,7 +657,9 @@ class AppImpl {
       location.reload();
     });
 
-    $('help-btn').addEventListener('click', (e) => { this.toggleHelp(e); });
+    $('help-btn').addEventListener('click', (e) => {
+      this.toggleHelp(e);
+    });
     document.addEventListener('click', (e) => {
       const pop = $maybe('help-popover');
       if (!pop || pop.style.display === 'none') return;

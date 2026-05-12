@@ -4,14 +4,7 @@
  * @see https://en.wikipedia.org/wiki/HSL_and_HSV — definitions used for HSL.
  */
 import { describe, it, expect } from 'vitest';
-import {
-  hexToRgb,
-  rgbToHex,
-  rgbToHsl,
-  hslToRgb,
-  applyDerivation,
-  clamp,
-} from './color-math.js';
+import { hexToRgb, rgbToHex, rgbToHsl, hslToRgb, applyDerivation, clamp } from './color-math.js';
 
 describe('hexToRgb', () => {
   it('parses a 6-digit hex', () => {

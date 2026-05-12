@@ -25,10 +25,7 @@ export interface RenderContext {
   derivedMap: Record<string, DerivedColor>;
 }
 
-type ResolvedColor =
-  | { kind: 'ansi'; value: AnsiName }
-  | { kind: 'hex'; value: string }
-  | null;
+type ResolvedColor = { kind: 'ansi'; value: AnsiName } | { kind: 'hex'; value: string } | null;
 
 interface StyleFrame {
   fg?: ResolvedColor;

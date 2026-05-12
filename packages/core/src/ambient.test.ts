@@ -10,9 +10,22 @@ describe('ambientLibSource', () => {
   it('declares the AnsiColor union with all 16 names', () => {
     const src = ambientLibSource([]);
     for (const c of [
-      'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
-      'brightBlack', 'brightRed', 'brightGreen', 'brightYellow',
-      'brightBlue', 'brightMagenta', 'brightCyan', 'brightWhite',
+      'black',
+      'red',
+      'green',
+      'yellow',
+      'blue',
+      'magenta',
+      'cyan',
+      'white',
+      'brightBlack',
+      'brightRed',
+      'brightGreen',
+      'brightYellow',
+      'brightBlue',
+      'brightMagenta',
+      'brightCyan',
+      'brightWhite',
     ]) {
       expect(src).toContain(`'${c}'`);
     }
@@ -29,7 +42,18 @@ describe('ambientLibSource', () => {
 
   it('declares JSX intrinsics for all renderer-supported tags', () => {
     const src = ambientLibSource([]);
-    for (const tag of ['fg', 'bg', 'bold', 'dim', 'italic', 'underline', 'inverse', 'strike', 'line', 'span']) {
+    for (const tag of [
+      'fg',
+      'bg',
+      'bold',
+      'dim',
+      'italic',
+      'underline',
+      'inverse',
+      'strike',
+      'line',
+      'span',
+    ]) {
       expect(src).toContain(tag + ':');
     }
   });

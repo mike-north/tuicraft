@@ -12,7 +12,12 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "api-report", "docs", "README.md"],
+  "files": [
+    "dist",
+    "api-report",
+    "docs",
+    "README.md"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json && api-extractor run --local",

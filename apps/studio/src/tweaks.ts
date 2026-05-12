@@ -41,21 +41,51 @@ interface TweakState {
 // at once: the mark, all hover states, modeline, focus rings, "live"
 // dot, even the editor cursor and Monaco theme tokens.
 const ACCENTS: Record<string, AccentDef> = {
-  chartreuse: { name: 'Chartreuse', accent: '#c8f432', soft: '#a8d016', dim: '#4b6010', ink: '#0c1300' },
-  amber:      { name: 'Amber',      accent: '#ffb000', soft: '#cc8c00', dim: '#553a00', ink: '#1a0f00' },
-  cyan:       { name: 'Cyan',       accent: '#5ffdff', soft: '#3dcdd0', dim: '#0e4a4c', ink: '#001416' },
-  magenta:    { name: 'Magenta',    accent: '#ff5fdf', soft: '#cc3eb0', dim: '#591f4d', ink: '#1a0014' },
-  rose:       { name: 'Rose',       accent: '#ff708e', soft: '#cc5a72', dim: '#5a1f2d', ink: '#1a0008' },
-  ice:        { name: 'Ice',        accent: '#a6d4ff', soft: '#7eb2e0', dim: '#2a4865', ink: '#020a14' },
+  chartreuse: {
+    name: 'Chartreuse',
+    accent: '#c8f432',
+    soft: '#a8d016',
+    dim: '#4b6010',
+    ink: '#0c1300',
+  },
+  amber: { name: 'Amber', accent: '#ffb000', soft: '#cc8c00', dim: '#553a00', ink: '#1a0f00' },
+  cyan: { name: 'Cyan', accent: '#5ffdff', soft: '#3dcdd0', dim: '#0e4a4c', ink: '#001416' },
+  magenta: { name: 'Magenta', accent: '#ff5fdf', soft: '#cc3eb0', dim: '#591f4d', ink: '#1a0014' },
+  rose: { name: 'Rose', accent: '#ff708e', soft: '#cc5a72', dim: '#5a1f2d', ink: '#1a0008' },
+  ice: { name: 'Ice', accent: '#a6d4ff', soft: '#7eb2e0', dim: '#2a4865', ink: '#020a14' },
 };
 
 // Density is a holistic scale — type, padding, sidebar width, gaps all
 // move together. Compact reads as "operator console at 3am, 1000 lines
 // of TS"; spacious reads as "design review, big screen, room of people."
 const DENSITY: Record<string, DensityDef> = {
-  compact:  { name: 'Compact',  fontBase: 11.5, sidebarW: 264, gap: 18, padMain: '16px 22px 80px', cardHeader: 32, headerLine: '34px' },
-  normal:   { name: 'Normal',   fontBase: 12.5, sidebarW: 300, gap: 26, padMain: '20px 26px 80px', cardHeader: 36, headerLine: '36px' },
-  spacious: { name: 'Spacious', fontBase: 14,   sidebarW: 340, gap: 38, padMain: '28px 36px 100px', cardHeader: 42, headerLine: '42px' },
+  compact: {
+    name: 'Compact',
+    fontBase: 11.5,
+    sidebarW: 264,
+    gap: 18,
+    padMain: '16px 22px 80px',
+    cardHeader: 32,
+    headerLine: '34px',
+  },
+  normal: {
+    name: 'Normal',
+    fontBase: 12.5,
+    sidebarW: 300,
+    gap: 26,
+    padMain: '20px 26px 80px',
+    cardHeader: 36,
+    headerLine: '36px',
+  },
+  spacious: {
+    name: 'Spacious',
+    fontBase: 14,
+    sidebarW: 340,
+    gap: 38,
+    padMain: '28px 36px 100px',
+    cardHeader: 42,
+    headerLine: '42px',
+  },
 };
 
 // Surface is atmosphere. Flat strips everything out — no grid, no glow,
@@ -64,8 +94,8 @@ const DENSITY: Record<string, DensityDef> = {
 // Scanlines layers a CRT scanline pattern over the entire app, plus a
 // soft vignette — feels like an old terminal photographed at 24fps.
 const SURFACE: Record<string, SurfaceDef> = {
-  flat:      { name: 'Flat' },
-  phosphor:  { name: 'Phosphor' },
+  flat: { name: 'Flat' },
+  phosphor: { name: 'Phosphor' },
   scanlines: { name: 'Scanlines' },
 };
 
@@ -140,8 +170,12 @@ function apply(state: Partial<TweakState>): void {
   document.body.classList.add('surface-' + (surfaceId in SURFACE ? surfaceId : 'phosphor'));
 
   document.body.classList.remove(
-    'accent-chartreuse', 'accent-amber', 'accent-cyan',
-    'accent-magenta', 'accent-rose', 'accent-ice',
+    'accent-chartreuse',
+    'accent-amber',
+    'accent-cyan',
+    'accent-magenta',
+    'accent-rose',
+    'accent-ice',
   );
   document.body.classList.add('accent-' + (accentId in ACCENTS ? accentId : 'chartreuse'));
 
@@ -190,7 +224,12 @@ function buildPanel(): PanelApi {
     sw.className = 'tp-swatch';
     sw.dataset['id'] = id;
     sw.title = a.name;
-    sw.innerHTML = '<span class="tp-sw-dot" style="background:' + a.accent + '"></span><span class="tp-sw-lbl">' + a.name + '</span>';
+    sw.innerHTML =
+      '<span class="tp-sw-dot" style="background:' +
+      a.accent +
+      '"></span><span class="tp-sw-lbl">' +
+      a.name +
+      '</span>';
     sw.addEventListener('click', () => {
       state.accent = id;
       renderActive();

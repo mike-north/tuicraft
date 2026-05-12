@@ -15,11 +15,15 @@ declare global {
 
 window.tuicraftApp = app;
 
-app.init().then(setupTweaks).catch((err: unknown) => {
-  console.error(err);
-  const host = document.getElementById('component-list');
-  if (host) {
-    const msg = err instanceof Error ? err.message : String(err);
-    host.innerHTML = '<div class="loading" style="color:var(--err)">failed to initialize: ' + msg + '</div>';
-  }
-});
+app
+  .init()
+  .then(setupTweaks)
+  .catch((err: unknown) => {
+    console.error(err);
+    const host = document.getElementById('component-list');
+    if (host) {
+      const msg = err instanceof Error ? err.message : String(err);
+      host.innerHTML =
+        '<div class="loading" style="color:var(--err)">failed to initialize: ' + msg + '</div>';
+    }
+  });
