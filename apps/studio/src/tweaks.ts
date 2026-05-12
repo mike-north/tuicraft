@@ -117,6 +117,20 @@ export function setupTweaks(): void {
   document.body.appendChild(panel.root);
   panel.root.style.display = 'none';
 
+  // Surface the panel via a topbar button. Standalone deploys have no
+  // parent frame to drive __activate_edit_mode, so this is the only way
+  // users can reach the accent/density/surface controls.
+  const btn = document.getElementById('tweaks-btn');
+  const setBtnState = (open: boolean): void => {
+    btn?.classList.toggle('active', open);
+  };
+  btn?.addEventListener('click', () => {
+    const opening = panel.root.style.display === 'none';
+    panel.root.style.display = opening ? 'block' : 'none';
+    if (opening) panel.dragReset();
+    setBtnState(opening);
+  });
+
   // listener BEFORE we announce availability
   window.addEventListener('message', (ev: MessageEvent<unknown>) => {
     if (typeof ev.data !== 'object' || ev.data === null) return;
@@ -130,15 +144,26 @@ export function setupTweaks(): void {
   });
   window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
-  // initial apply from defaults already baked into index.html
-  apply(window.TWEAK_DEFAULTS ?? {});
+  // Track the full state here. The panel emits only the diff per click,
+  // so we merge before re-applying — otherwise unchanged knobs would
+  // snap back to apply()'s built-in defaults (e.g. picking an accent
+  // would silently reset density and surface).
+  const state: TweakState = {
+    accent: 'chartreuse',
+    density: 'normal',
+    surface: 'phosphor',
+    ...(window.TWEAK_DEFAULTS ?? {}),
+  };
+  apply(state);
 
   panel.onChange = (next): void => {
-    apply(next);
+    Object.assign(state, next);
+    apply(state);
     window.parent.postMessage({ type: '__edit_mode_set_keys', edits: next }, '*');
   };
   panel.onDismiss = (): void => {
     panel.root.style.display = 'none';
+    setBtnState(false);
     window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
   };
 }
