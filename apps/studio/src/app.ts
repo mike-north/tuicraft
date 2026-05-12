@@ -102,6 +102,13 @@ class AppImpl {
 
   async save(): Promise<void> {
     try {
+      // Mirror the live ComponentInstance.source values into state.components
+      // before serializing. state.components is only used as the init-time
+      // seed; after boot, each ComponentInstance owns the live source via
+      // its Monaco model. Skipping this sync was the bug behind "URL doesn't
+      // reflect my edits in a new tab" — Monaco edits would change the
+      // ComponentInstance but never reach the encoded state.
+      this.state.components = this.components.map((c) => ({ id: c.id, source: c.source }));
       const hash = await encodeStateToHash(this.state);
       history.replaceState(null, '', '#' + hash);
     } catch (e) {
