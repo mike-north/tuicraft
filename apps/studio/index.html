@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tuicraft — tui component studio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Inconsolata:wght@400;500;600;700&display=swap">
+
+<script>
+  // The tweaks panel reads/writes this block. The /*EDITMODE-BEGIN*/...
+  // /*EDITMODE-END*/ markers are part of the Claude Design round-trip
+  // protocol — do not remove them.
+  window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "accent": "chartreuse",
+    "density": "spacious",
+    "surface": "scanlines"
+  }/*EDITMODE-END*/;
+</script>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="wordmark">
+      <button class="sidebar-toggle" id="sidebar-toggle" title="toggle sidebar (⌘B)" aria-label="toggle sidebar">
+        <span class="st-bar"></span><span class="st-bar"></span><span class="st-bar"></span>
+      </button>
+      <span class="mark">▮</span>
+      <span class="name">tuicraft<span class="slash">/</span><span class="sub">tui component studio</span></span>
+    </div>
+    <div class="crumbs">
+      <div class="crumb"><span class="dot"></span><span class="k">session</span><span class="v accent">live</span></div>
+      <div class="crumb"><span class="k">theme</span><span class="v" id="crumb-theme">—</span></div>
+      <div class="crumb"><span class="k">font</span><span class="v" id="crumb-font">—</span></div>
+      <div class="crumb"><span class="k">components</span><span class="v" id="crumb-comp">0</span></div>
+      <div class="crumb"><span class="k">derived</span><span class="v" id="crumb-derived">0</span></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="tb-btn" id="help-btn" title="how this works">? HELP</button>
+      <button class="tb-btn" id="copy-url-btn" title="copy a shareable URL of the workspace">SHARE URL</button>
+      <button class="tb-btn primary" id="stage-btn" title="present this workspace fullscreen">
+        <span class="play-glyph"></span>STAGE<span class="kbd">⌘⇧P</span>
+      </button>
+      <button class="tb-btn danger" id="reset-btn" title="discard everything and reload defaults">RESET</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="sidebar">
+
+      <div class="side-section">
+        <div class="side-h">
+          <span class="num">01</span><span class="label">terminal theme</span>
+          <span class="rule"></span>
+        </div>
+        <div class="theme-list" id="theme-list"></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-h">
+          <span class="num">02</span><span class="label">terminal font</span>
+          <span class="rule"></span>
+        </div>
+        <div class="font-list" id="font-list"></div>
+        <div class="toggle-row">
+          <span class="lbl">
+            <input type="checkbox" class="checkbox" id="nerd-toggle">
+            <span>Nerd Font icons</span>
+          </span>
+          <span class="icon-preview" title="example glyphs">&#xf126; &#xf058; &#xe0b0;</span>
+        </div>
+        <div class="slider-section">
+          <div class="lbl"><span>font size</span><span class="val" id="font-size-val">13px</span></div>
+          <input type="range" id="font-size-slider" min="10" max="28" step="1" value="13">
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-h">
+          <span class="num">03</span><span class="label">derived palette</span>
+          <span class="rule"></span>
+          <span class="hint" id="derived-hint">0 colors</span>
+        </div>
+        <div class="derived-list" id="derived-list"></div>
+        <button class="add-derived" id="add-derived-btn">+ derived color</button>
+      </div>
+
+    </aside>
+
+    <section class="main">
+      <div class="component-list" id="component-list">
+        <div class="loading">
+          booting editor<div class="bar"></div>
+        </div>
+      </div>
+      <div class="footer-actions" id="footer-actions" style="display:none">
+        <button class="add-component" id="add-component-btn">
+          <span class="plus"></span>new component
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div class="modeline">
+    <div class="ml-mode">▣ EDIT</div>
+    <div class="ml-section"><span class="k">theme:</span><span id="ml-theme">—</span></div>
+    <div class="ml-section"><span class="k">font:</span><span id="ml-font">—</span></div>
+    <div class="ml-section"><span class="k">size:</span><span id="ml-size">—</span></div>
+    <div class="ml-section"><span class="k">components:</span><span id="ml-comp">0</span></div>
+    <div class="ml-section"><span class="k">derived:</span><span id="ml-derived">$0</span></div>
+    <div class="ml-spacer"></div>
+    <div class="ml-right">URL ⇄ STATE</div>
+  </div>
+</div>
+
+<div class="stage-chrome">
+  <div class="stage-top">
+    <div class="stage-title">
+      <span class="stage-idx-pair">
+        <span id="stage-idx">01</span><span class="sep">/</span><span id="stage-total">01</span>
+      </span>
+      <span class="stage-name-big" id="stage-name">—</span>
+      <span class="stage-state-tag">
+        <span class="k">state</span>
+        <span class="state-idx-pair"><span id="stage-state-idx">01</span><span class="sep">/</span><span id="stage-state-total">01</span></span>
+        <span class="state-name" id="stage-state-name">—</span>
+      </span>
+    </div>
+    <div class="stage-actions">
+      <button class="stage-ctrl" id="stage-fs-down" title="smaller">−</button>
+      <span class="stage-fs-val"><span id="stage-fs">20px</span></span>
+      <button class="stage-ctrl" id="stage-fs-up" title="bigger">+</button>
+      <button class="stage-exit" id="stage-exit-btn">▣ EXIT  <span style="opacity:.55">esc</span></button>
+    </div>
+  </div>
+  <div class="stage-nav">
+    <button class="stage-nav-btn" id="stage-prev-btn" title="prev component (←)">◂ prev component</button>
+    <div class="stage-nav-state">
+      <button class="stage-nav-btn small" id="stage-state-prev-btn" title="prev state (↑)">▴ state</button>
+      <button class="stage-nav-btn small" id="stage-state-next-btn" title="next state (↓ / space)">state ▾</button>
+    </div>
+    <button class="stage-nav-btn" id="stage-next-btn" title="next component (→)">next component ▸</button>
+  </div>
+  <div class="stage-banner">
+    <div class="seg"><span class="k">theme</span><span class="accent" id="stage-theme">—</span></div>
+    <div class="seg"><span class="k">font</span><span id="stage-font">—</span></div>
+    <div class="seg"><span class="k">size</span><span id="stage-size">—</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="help-popover" id="help-popover" style="display:none"></div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# generated documentation
+packages/*/docs/** linguist-generated=true
+packages/*/api-report/** linguist-documentation=true

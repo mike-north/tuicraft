@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "noEmit": true,
+    "jsx": "preserve",
+    // The studio does not author its own TSX — JSX is only present in the
+    // string templates we send to Monaco — so we don't need a real factory.
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": false
+  },
+  "include": ["src/**/*", "vite.config.ts"]
+}

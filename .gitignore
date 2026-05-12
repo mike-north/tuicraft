@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+
+# build artifacts
+dist/
+build/
+.turbo/
+.vite/
+*.tsbuildinfo
+
+# vercel
+.vercel/
+
+# fly
+.fly/
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# coverage
+coverage/
+
+# scratch / local-only
+scratch/
+*.local.*
+
+# api-extractor temp
+temp/
+
+# Claude Code local configuration (auto-added)
+.claude/*.local.*
