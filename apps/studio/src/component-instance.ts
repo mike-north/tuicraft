@@ -304,6 +304,10 @@ export class ComponentInstance {
   }
 
   private reconcileStates(states: ComponentState[]): void {
+    // Strip any stale error placeholder left by a prior failed compile —
+    // otherwise it lingers above the freshly-rendered state cards.
+    this.statesListEl.querySelectorAll('.state-error').forEach((e) => { e.remove(); });
+
     while (this.stateCards.length > states.length) {
       const sc = this.stateCards.pop();
       if (!sc) break;
