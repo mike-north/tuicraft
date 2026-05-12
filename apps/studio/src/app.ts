@@ -427,10 +427,17 @@ class AppImpl {
     this.stageActive = true;
     const idx = focusComp ? this.components.indexOf(focusComp) : 0;
     this.stageIndex = Math.max(0, idx);
+    this.stageStateIndex = 0;
     this.applyStageVisibility();
     this.applyTerminalOptionsToAll();
     this.rerenderAllStates();
     this.updateStageBanner();
+    // The visible state card just flipped from off-screen (-99999px) to
+    // on-screen, AND the font size jumped to stageFontSize. xterm sized
+    // its cell metrics against the off-screen layout, so the freshly-
+    // written ANSI lands on a 0-px-wide grid. Re-measure on the next
+    // frame so output is actually visible.
+    this.refreshCurrent();
     this.toast('stage — ← → to navigate, esc to exit');
   }
 

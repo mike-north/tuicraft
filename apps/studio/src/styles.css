@@ -1132,21 +1132,32 @@ body.stage-mode.sidebar-collapsed .sidebar {
   margin-left: 0;
   border-right-color: transparent;
 }
+/* When the sidebar collapses, the fixed-position chrome slides flush left. */
+body.stage-mode.sidebar-collapsed .stage-top,
+body.stage-mode.sidebar-collapsed .stage-nav,
+body.stage-mode.sidebar-collapsed .stage-banner {
+  left: 0;
+}
 body.stage-mode .sidebar > * { opacity: 1 !important; }
 
 body.stage-mode .app { grid-template-rows: 0 1fr 0; }
 body.stage-mode .workspace {
   display: flex;
   flex-direction: row;
-  height: 100%;
+  /* In stage mode the topbar + modeline rows are 0, so the workspace
+     row owns the full viewport. Pin its height to 100vh so the flex
+     children get a real cross-axis size to stretch into; relying on
+     `1fr` grid stretching alone leaves the computed height at 0 here. */
+  height: 100vh;
+  min-height: 0;
   grid-template-columns: none;
 }
 body.stage-mode .main {
   flex: 1 1 auto;
   position: relative;
   inset: auto;
-  height: 100%;
   width: auto;
+  min-height: 0;
   padding: 110px 4vw 130px;
   background: #000;
   overflow-y: auto;
@@ -1226,9 +1237,11 @@ body.stage-mode .state-terminal::before { display: none; }
 .stage-chrome { display: none; }
 body.stage-mode .stage-chrome { display: block; }
 
+/* Stage chrome is offset by the sidebar so it doesn't cover it when open. */
 .stage-top {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0; left: var(--sidebar-w); right: 0;
+  transition: left .25s ease;
   z-index: 500;
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 28px 16px;
@@ -1304,8 +1317,9 @@ body.stage-mode .stage-chrome { display: block; }
 
 .stage-nav {
   position: fixed;
-  top: 50%; left: 0; right: 0;
+  top: 50%; left: var(--sidebar-w); right: 0;
   transform: translateY(-50%);
+  transition: left .25s ease;
   z-index: 450;
   display: flex; justify-content: space-between; align-items: center;
   padding: 0 18px;
@@ -1335,7 +1349,8 @@ body.stage-mode .stage-chrome { display: block; }
 
 .stage-banner {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0; left: var(--sidebar-w); right: 0;
+  transition: left .25s ease;
   z-index: 400;
   display: flex; align-items: center;
   padding: 16px 28px 22px;
