@@ -115,21 +115,21 @@ export default defineComponent<GitStatuslineProps>({
     return (
       <line>
         <bg color="blue"><fg color="brightWhite">
-          <bold>  \\uf126 {p.branch}  </bold>
+          <bold>   {p.branch}  </bold>
         </fg></bg>
-        <fg color="blue"><bg color="brightBlack">\\ue0b0</bg></fg>
+        <fg color="blue"><bg color="brightBlack"></bg></fg>
         <bg color="brightBlack"><fg color="brightWhite">
           <span>  </span>
-          {p.ahead > 0 && <><fg color="green">\\uf062 {p.ahead}</fg><span> </span></>}
-          {p.behind > 0 && <><fg color="red">\\uf063 {p.behind}</fg><span> </span></>}
-          {p.dirty > 0 && <><fg color="yellow">\\uf12a {p.dirty}</fg><span> </span></>}
+          {p.ahead > 0 && <><fg color="green"> {p.ahead}</fg><span> </span></>}
+          {p.behind > 0 && <><fg color="red"> {p.behind}</fg><span> </span></>}
+          {p.dirty > 0 && <><fg color="yellow"> {p.dirty}</fg><span> </span></>}
           <span> </span>
         </fg></bg>
-        <fg color="brightBlack"><bg color={ci.color}>\\ue0b0</bg></fg>
+        <fg color="brightBlack"><bg color={ci.color}></bg></fg>
         <bg color={ci.color}><fg color="black">
           <bold>  {ci.glyph} {ci.label}  </bold>
         </fg></bg>
-        <fg color={ci.color}>\\ue0b0</fg>
+        <fg color={ci.color}></fg>
       </line>
     );
   },
