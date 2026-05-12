@@ -395,13 +395,9 @@ class AppImpl {
     const f = (FONTS as Record<string, Font>)[this.state.fontId];
     setText('crumb-theme', t.name);
     setText('crumb-font', f ? f.name : this.state.fontId);
-    setText('crumb-comp', this.components.length);
-    setText('crumb-derived', this.state.derived.length);
     setText('ml-theme', t.name);
     setText('ml-font', (f ? f.name : this.state.fontId) + (this.state.nerdIcons ? ' +nf' : ''));
     setText('ml-size', px(this.state.fontSize));
-    setText('ml-comp', `${String(this.components.length)} component${this.components.length === 1 ? '' : 's'}`);
-    setText('ml-derived', `$${String(this.state.derived.length)}`);
     this.updateStageBanner();
   }
 
