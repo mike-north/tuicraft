@@ -4,8 +4,12 @@
 import '@xterm/xterm/css/xterm.css';
 import './styles.css';
 
+import { inject } from '@vercel/analytics';
 import { app } from './app.js';
 import { setupTweaks } from './tweaks.js';
+
+// Initialize Vercel Web Analytics
+inject();
 
 declare global {
   interface Window {
