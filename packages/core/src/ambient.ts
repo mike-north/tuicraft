@@ -45,6 +45,15 @@ declare namespace JSX {
     line:      { children?: any };
     /** No-op grouping element. */
     span:      { children?: any };
+    /**
+     * Semantic icon. Emits \`nerd\` when the workspace's Nerd Font toggle
+     * is on; otherwise emits \`fallback\` (typically a regular Unicode
+     * glyph or short ASCII). Wrap in \`<fg>\`, \`<bold>\`, etc. for styling.
+     *
+     * @example
+     *   <icon nerd="\\uf058" fallback="✓" />
+     */
+    icon: { nerd: string; fallback?: string };
   }
 }
 

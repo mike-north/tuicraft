@@ -43,6 +43,45 @@ pnpm check
 - `apps/studio` is a vanilla-TypeScript Vite SPA. It loads Monaco for the editor and xterm.js for the previews, and persists the entire workspace state to the URL hash so "share URL" is "share workspace."
 - `packages/core` is a pure, side-effect-free library: themes, fonts, color math, JSX runtime, ANSI renderer, ambient-`.d.ts` generator, workspace-state types, URL-hash codec. No DOM, no Monaco — testable in isolation.
 
+## Shipping components to a terminal
+
+The studio renders components to ANSI inside xterm.js so designers can iterate visually. The same component can render in a real terminal — `@tuicraft/core` is dependency-free and runtime-agnostic. The one thing that differs is **Nerd Font availability**: in the studio it's a sidebar toggle (the design intent); in a terminal it's a host-OS thing the terminal itself can't reliably report. Wire it up via `hasNerdFontSupport`:
+
+```ts
+import {
+  renderTreeToAnsi,
+  hasNerdFontSupport,
+  getTheme,
+  h,
+  Fragment,
+} from '@tuicraft/core';
+
+// Use the <icon> intrinsic with both forms:
+const tree = (
+  <line>
+    <fg color="green">
+      <bold>
+        <icon nerd="" fallback="✓" />
+      </bold>
+    </fg>{' '}
+    deploy complete
+  </line>
+);
+
+process.stdout.write(
+  renderTreeToAnsi(tree, {
+    theme: getTheme('tokyo-night'),
+    derivedMap: {},
+    nerdIcons: hasNerdFontSupport({
+      env: process.env,
+      isTTY: process.stdout.isTTY,
+    }),
+  }),
+);
+```
+
+`hasNerdFontSupport` is a pure function — pass whatever environment signals you have (Node `process.env`, Deno `Deno.env.toObject()`, Bun's equivalents). It honours `NERD_FONT=1` / `NERD_FONT=0` as an explicit override, allow-lists a handful of terminals that conventionally ship with a Nerd Font configured (kitty, WezTerm, Alacritty, ghostty), and defaults to `false` for everything else. Layer your own `--nerd-fonts` / `--no-nerd-fonts` CLI flag on top so explicit user intent always wins.
+
 ## Deploys
 
 | Surface       | Host   | Trigger                                                          |

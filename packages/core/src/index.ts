@@ -7,3 +7,4 @@ export * from './ambient.js';
 export * from './state.js';
 export * from './persist.js';
 export * from './seeds.js';
+export * from './terminal.js';

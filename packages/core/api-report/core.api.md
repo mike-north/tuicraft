@@ -122,6 +122,9 @@ export function getTheme(id: string): Theme;
 // @public (undocumented)
 export function h(tag: JSXTag, props: Record<string, unknown> | null, ...kids: JSXNode[]): JSXElement;
 
+// @public
+export function hasNerdFontSupport(signals?: NerdFontDetectionSignals): boolean;
+
 // @public (undocumented)
 export function hexToRgb(hex: string): Rgb;
 
@@ -164,11 +167,18 @@ export function makeSeedState(): WorkspaceState;
 export const NERD_FAMILY = "\"Symbols Nerd Font Mono\"";
 
 // @public
+export interface NerdFontDetectionSignals {
+    env?: Readonly<Record<string, string | undefined>>;
+    isTTY?: boolean;
+}
+
+// @public
 export function nextId(): string;
 
 // @public (undocumented)
 export interface RenderContext {
     derivedMap: Record<string, DerivedColor>;
+    nerdIcons?: boolean;
     // (undocumented)
     theme: Theme;
 }
@@ -195,7 +205,7 @@ export const SEED_COMPONENT_1 = "// A component is one TSX file: a contract (TS 
 export const SEED_COMPONENT_2 = "interface ProgressLineProps {\n  label: string;\n  current: number;\n  total: number;\n  width?: number;\n}\n\nexport default defineComponent<ProgressLineProps>({\n  name: 'ProgressLine',\n  render: (p) => {\n    const width = p.width ?? 24;\n    const ratio = Math.max(0, Math.min(1, p.current / p.total));\n    const filled = Math.round(ratio * width);\n    const pct = Math.round(ratio * 100).toString().padStart(3, ' ');\n    return (\n      <line>\n        <fg color=\"$muted\">{p.label.padEnd(14)}</fg>\n        <fg color=\"brightBlack\">[</fg>\n        <fg color=\"cyan\">{'\\u2588'.repeat(filled)}</fg>\n        <fg color=\"$track\">{'\\u2588'.repeat(width - filled)}</fg>\n        <fg color=\"brightBlack\">]</fg>\n        <span>  </span>\n        <fg color=\"brightWhite\"><bold>{pct}%</bold></fg>\n        <fg color=\"$muted\"> {p.current}/{p.total}</fg>\n      </line>\n    );\n  },\n  states: [\n    { name: 'starting',  data: { label: 'compile',  current: 3,   total: 142 } },\n    { name: 'midway',    data: { label: 'compile',  current: 84,  total: 142 } },\n    { name: 'finishing', data: { label: 'compile',  current: 138, total: 142 } },\n    { name: 'done',      data: { label: 'compile',  current: 142, total: 142 } },\n  ],\n});\n";
 
 // @public (undocumented)
-export const SEED_COMPONENT_3 = "// Uses Nerd Font icons (\\uf126 git branch, \\uf06a issue, etc) and powerline\n// separators (\\ue0b0). Toggle \"nerd icons\" in the sidebar to see the\n// fallback behavior on a system without a patched font installed.\n\ninterface GitStatuslineProps {\n  branch: string;\n  ahead: number;\n  behind: number;\n  dirty: number;\n  ci: 'passing' | 'failing' | 'pending';\n}\n\nconst CI = {\n  passing: { glyph: '\\uf058', color: 'green'  as Color, label: 'passing' },\n  failing: { glyph: '\\uf057', color: 'red'    as Color, label: 'failing' },\n  pending: { glyph: '\\uf017', color: 'yellow' as Color, label: 'pending' },\n};\n\nexport default defineComponent<GitStatuslineProps>({\n  name: 'GitStatusline',\n  render: (p) => {\n    const ci = CI[p.ci];\n    return (\n      <line>\n        <bg color=\"blue\"><fg color=\"brightWhite\">\n          <bold>  \uF126 {p.branch}  </bold>\n        </fg></bg>\n        <fg color=\"blue\"><bg color=\"brightBlack\">\uE0B0</bg></fg>\n        <bg color=\"brightBlack\"><fg color=\"brightWhite\">\n          <span>  </span>\n          {p.ahead > 0 && <><fg color=\"green\">\uF062 {p.ahead}</fg><span> </span></>}\n          {p.behind > 0 && <><fg color=\"red\">\uF063 {p.behind}</fg><span> </span></>}\n          {p.dirty > 0 && <><fg color=\"yellow\">\uF12A {p.dirty}</fg><span> </span></>}\n          <span> </span>\n        </fg></bg>\n        <fg color=\"brightBlack\"><bg color={ci.color}>\uE0B0</bg></fg>\n        <bg color={ci.color}><fg color=\"black\">\n          <bold>  {ci.glyph} {ci.label}  </bold>\n        </fg></bg>\n        <fg color={ci.color}>\uE0B0</fg>\n      </line>\n    );\n  },\n  states: [\n    { name: 'clean',         data: { branch: 'main',          ahead: 0, behind: 0, dirty: 0, ci: 'passing' } },\n    { name: 'ahead-of-main', data: { branch: 'feat/colors',   ahead: 3, behind: 0, dirty: 2, ci: 'pending' } },\n    { name: 'broken',        data: { branch: 'fix/race-cond', ahead: 1, behind: 7, dirty: 4, ci: 'failing' } },\n  ],\n});\n";
+export const SEED_COMPONENT_3 = "// Uses Nerd Font icons (\\uf126 git branch, \\uf06a issue, etc) and powerline\n// separators (\\ue0b0). Toggle \"nerd icons\" in the sidebar to see the\n// fallback behavior on a system without a patched font installed.\n\ninterface GitStatuslineProps {\n  branch: string;\n  ahead: number;\n  behind: number;\n  dirty: number;\n  ci: 'passing' | 'failing' | 'pending';\n}\n\n// <icon nerd=\"\u2026\" fallback=\"\u2026\" /> picks the Nerd codepoint when the\n// active workspace has Nerd Font icons enabled and the ASCII fallback\n// otherwise. Toggle \"Nerd Font icons\" in the sidebar to flip the seed\n// component live. In a real terminal, hasNerdFontSupport(...) drives\n// the same nerdIcons flag on the render context.\nconst CI = {\n  passing: { nerd: '\\uf058', fallback: '\u2713', color: 'green'  as Color, label: 'passing' },\n  failing: { nerd: '\\uf057', fallback: '\u2717', color: 'red'    as Color, label: 'failing' },\n  pending: { nerd: '\\uf017', fallback: '\u00B7', color: 'yellow' as Color, label: 'pending' },\n};\n\nexport default defineComponent<GitStatuslineProps>({\n  name: 'GitStatusline',\n  render: (p) => {\n    const ci = CI[p.ci];\n    return (\n      <line>\n        <bg color=\"blue\"><fg color=\"brightWhite\">\n          <bold>  \uF126 {p.branch}  </bold>\n        </fg></bg>\n        <fg color=\"blue\"><bg color=\"brightBlack\">\uE0B0</bg></fg>\n        <bg color=\"brightBlack\"><fg color=\"brightWhite\">\n          <span>  </span>\n          {p.ahead > 0 && <><fg color=\"green\">\uF062 {p.ahead}</fg><span> </span></>}\n          {p.behind > 0 && <><fg color=\"red\">\uF063 {p.behind}</fg><span> </span></>}\n          {p.dirty > 0 && <><fg color=\"yellow\">\uF12A {p.dirty}</fg><span> </span></>}\n          <span> </span>\n        </fg></bg>\n        <fg color=\"brightBlack\"><bg color={ci.color}>\uE0B0</bg></fg>\n        <bg color={ci.color}><fg color=\"black\">\n          <bold>  <icon nerd={ci.nerd} fallback={ci.fallback} /> {ci.label}  </bold>\n        </fg></bg>\n        <fg color={ci.color}>\uE0B0</fg>\n      </line>\n    );\n  },\n  states: [\n    { name: 'clean',         data: { branch: 'main',          ahead: 0, behind: 0, dirty: 0, ci: 'passing' } },\n    { name: 'ahead-of-main', data: { branch: 'feat/colors',   ahead: 3, behind: 0, dirty: 2, ci: 'pending' } },\n    { name: 'broken',        data: { branch: 'fix/race-cond', ahead: 1, behind: 7, dirty: 4, ci: 'failing' } },\n  ],\n});\n";
 
 // @public (undocumented)
 export interface SerializedComponentV1 {

@@ -102,10 +102,15 @@ interface GitStatuslineProps {
   ci: 'passing' | 'failing' | 'pending';
 }
 
+// <icon nerd="…" fallback="…" /> picks the Nerd codepoint when the
+// active workspace has Nerd Font icons enabled and the ASCII fallback
+// otherwise. Toggle "Nerd Font icons" in the sidebar to flip the seed
+// component live. In a real terminal, hasNerdFontSupport(...) drives
+// the same nerdIcons flag on the render context.
 const CI = {
-  passing: { glyph: '\\uf058', color: 'green'  as Color, label: 'passing' },
-  failing: { glyph: '\\uf057', color: 'red'    as Color, label: 'failing' },
-  pending: { glyph: '\\uf017', color: 'yellow' as Color, label: 'pending' },
+  passing: { nerd: '\\uf058', fallback: '✓', color: 'green'  as Color, label: 'passing' },
+  failing: { nerd: '\\uf057', fallback: '✗', color: 'red'    as Color, label: 'failing' },
+  pending: { nerd: '\\uf017', fallback: '·', color: 'yellow' as Color, label: 'pending' },
 };
 
 export default defineComponent<GitStatuslineProps>({
@@ -127,7 +132,7 @@ export default defineComponent<GitStatuslineProps>({
         </fg></bg>
         <fg color="brightBlack"><bg color={ci.color}></bg></fg>
         <bg color={ci.color}><fg color="black">
-          <bold>  {ci.glyph} {ci.label}  </bold>
+          <bold>  <icon nerd={ci.nerd} fallback={ci.fallback} /> {ci.label}  </bold>
         </fg></bg>
         <fg color={ci.color}></fg>
       </line>

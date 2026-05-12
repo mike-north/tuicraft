@@ -23,6 +23,13 @@ export interface RenderContext {
   theme: Theme;
   /** Lookup by derived-color name (without the leading `$`). */
   derivedMap: Record<string, DerivedColor>;
+  /**
+   * Whether the active workspace declares Nerd Font icon glyphs as
+   * available. Drives the `<icon nerd="…" fallback="…" />` intrinsic.
+   * Defaults to `true` so existing render contexts don't have to
+   * thread the flag through.
+   */
+  nerdIcons?: boolean;
 }
 
 type ResolvedColor = { kind: 'ansi'; value: AnsiName } | { kind: 'hex'; value: string } | null;
@@ -150,6 +157,25 @@ export function renderTreeToAnsi(tree: JSXNode, ctx: RenderContext): string {
     }
 
     const t = node.tag;
+
+    // <icon nerd="" fallback="✓" /> — leaf node, no children, no
+    // styling of its own; emits one of the two strings depending on
+    // whether the active workspace has Nerd Font icons enabled. The
+    // user wraps it in <fg> / <bold> / etc. for colour and weight.
+    if (t === 'icon') {
+      const useNerd = ctx.nerdIcons !== false;
+      const nerd = node.props['nerd'];
+      const fallback = node.props['fallback'];
+      const text =
+        useNerd && typeof nerd === 'string' && nerd.length > 0
+          ? nerd
+          : typeof fallback === 'string'
+            ? fallback
+            : '';
+      emitText(text);
+      return;
+    }
+
     const frame: StyleFrame = {};
     if (t === 'fg') frame.fg = resolveColor(node.props['color'], ctx);
     else if (t === 'bg') frame.bg = resolveColor(node.props['color'], ctx);

@@ -122,3 +122,41 @@ describe('renderTreeToAnsi', () => {
     expect(renderTreeToAnsi(tree, ctx)).toBe('\x1b[0;31mab\x1b[0m');
   });
 });
+
+describe('<icon> intrinsic', () => {
+  const baseCtx = { ...ctx };
+
+  it('emits the nerd glyph when ctx.nerdIcons is true', () => {
+    const tree = h('icon', { nerd: '', fallback: 'V' });
+    expect(renderTreeToAnsi(tree, { ...baseCtx, nerdIcons: true })).toBe('\x1b[0m\x1b[0m');
+  });
+
+  it('emits the fallback when ctx.nerdIcons is false', () => {
+    const tree = h('icon', { nerd: '', fallback: 'V' });
+    expect(renderTreeToAnsi(tree, { ...baseCtx, nerdIcons: false })).toBe('\x1b[0mV\x1b[0m');
+  });
+
+  it('treats undefined nerdIcons as enabled (back-compat with old contexts)', () => {
+    const tree = h('icon', { nerd: 'X', fallback: 'Y' });
+    expect(renderTreeToAnsi(tree, baseCtx)).toBe('\x1b[0mX\x1b[0m');
+  });
+
+  it('falls back when nerd codepoint is missing and nerdIcons is on', () => {
+    const tree = h('icon', { fallback: 'Y' });
+    expect(renderTreeToAnsi(tree, { ...baseCtx, nerdIcons: true })).toBe('\x1b[0mY\x1b[0m');
+  });
+
+  it('emits nothing if both nerd and fallback are missing', () => {
+    const tree = h('icon', {});
+    expect(renderTreeToAnsi(tree, baseCtx)).toBe('\x1b[0m');
+  });
+
+  it('inherits surrounding fg/bold styling', () => {
+    const tree = h(
+      'fg',
+      { color: 'green' },
+      h('bold', null, h('icon', { nerd: 'X', fallback: 'Y' })),
+    );
+    expect(renderTreeToAnsi(tree, { ...baseCtx, nerdIcons: true })).toBe('\x1b[0;32;1mX\x1b[0m');
+  });
+});

@@ -84,7 +84,11 @@ class AppImpl {
     return getTheme(this.state.themeId);
   }
   renderCtx(): RenderContext {
-    return { theme: this.currentTheme(), derivedMap: this.derivedMap };
+    return {
+      theme: this.currentTheme(),
+      derivedMap: this.derivedMap,
+      nerdIcons: this.state.nerdIcons,
+    };
   }
 
   updateAmbientLib(): void {
@@ -231,6 +235,9 @@ class AppImpl {
   setNerdIcons(v: boolean): void {
     this.state.nerdIcons = v;
     this.applyTerminalOptionsToAll();
+    // <icon nerd="…" fallback="…" /> branches on ctx.nerdIcons, so the
+    // ANSI itself changes when the toggle flips — not just the font.
+    this.rerenderAllStates();
     this.scheduleSave();
   }
 
@@ -724,7 +731,13 @@ class AppImpl {
       <p><strong>Intrinsics:</strong> <code>&lt;fg&gt;</code>, <code>&lt;bg&gt;</code>,
          <code>&lt;bold&gt;</code>, <code>&lt;dim&gt;</code>, <code>&lt;italic&gt;</code>,
          <code>&lt;underline&gt;</code>, <code>&lt;inverse&gt;</code>,
-         <code>&lt;line&gt;</code>, <code>&lt;span&gt;</code>.</p>
+         <code>&lt;line&gt;</code>, <code>&lt;span&gt;</code>,
+         <code>&lt;icon nerd=&quot;…&quot; fallback=&quot;…&quot;/&gt;</code>.</p>
+      <p><strong>Icons:</strong> <code>&lt;icon&gt;</code> emits the Nerd Font codepoint
+         when the sidebar's <em>Nerd Font icons</em> toggle is on, otherwise the
+         fallback. In a terminal app, drive the same flag with
+         <code>hasNerdFontSupport({ env, isTTY })</code> from
+         <code>@tuicraft/core</code>.</p>
       <p><strong>Colors:</strong> ANSI 16 (<code>"red"</code>, <code>"brightBlue"</code>) re-map
          per theme. Hex (<code>"#f59e0b"</code>) is absolute.
          <code>"$name"</code> references a derived color and re-resolves on theme switch.</p>
